@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledarskapsbarometern 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #333333;
+    --paper: #F8F1E7;
+    --accent: #dd7602;
+    --accent-dark: #B55c04;
+    --accent-deeper: #9b3a05;
+    --gold: #DB9F3C;
+    --muted: #9a8c7e;
+    --card: #ffffff;
+    --card-bg: #EEE4D4;
+    --dark: #333333;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
+
+  /* HEADER */
+  header { background: var(--dark); color: var(--paper); padding: 2.5rem 2rem 2rem; text-align: center; position: relative; overflow: hidden; }
+  header::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(221,118,2,.07) 60px, rgba(221,118,2,.07) 61px), repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(221,118,2,.07) 60px, rgba(221,118,2,.07) 61px); }
+  .eyebrow { font-size: .7rem; letter-spacing: .25em; text-transform: uppercase; color: var(--gold); margin-bottom: .75rem; position: relative; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; position: relative; }
+  header h1 em { font-style: italic; color: var(--gold); }
+  .sub { margin-top: .75rem; font-size: .9rem; color: rgba(248,241,231,.65); font-weight: 300; position: relative; }
+
+  /* LOGO */
+  .header-logo { position: relative; display: flex; justify-content: center; margin-bottom: 1.25rem; }
+  .framfot-logo { height: 36px; width: auto; opacity: .92; }
+
+  /* PROGRESS */
+  .progress-wrap { background: var(--dark); padding: .75rem 2rem 1.25rem; display: flex; align-items: center; gap: 1rem; border-top: 1px solid rgba(221,118,2,.2); }
+  .progress-bar { flex: 1; height: 3px; background: rgba(255,255,255,.15); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .4s ease; width: 0%; }
+  .progress-label { color: rgba(248,241,231,.5); font-size: .75rem; white-space: nowrap; }
+
+  /* MAIN */
+  main { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  /* QUESTION CARD */
+  .question-card { background: var(--card); border: 1px solid rgba(51,51,51,.1); border-radius: 4px; padding: 2.5rem; margin-bottom: 1.5rem; display: none; animation: slideIn .35s ease; box-shadow: 0 2px 20px rgba(51,51,51,.07); }
+  .question-card.active { display: block; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .q-number { font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; }
+  .q-text { font-family: 'Playfair Display', serif; font-size: 1.35rem; line-height: 1.45; margin-bottom: 1.75rem; }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: .6rem; }
+  .option { display: flex; align-items: center; gap: .85rem; padding: .9rem 1.1rem; border: 1.5px solid rgba(51,51,51,.12); border-radius: 3px; cursor: pointer; transition: all .2s; background: white; font-size: .95rem; position: relative; overflow: hidden; }
+  .option:hover { border-color: var(--accent); background: rgba(221,118,2,.05); }
+  .option.selected { border-color: var(--accent); background: rgba(221,118,2,.07); }
+  .option-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(51,51,51,.2); flex-shrink: 0; transition: all .2s; display: flex; align-items: center; justify-content: center; }
+  .option.selected .option-dot { border-color: var(--accent); background: var(--accent); }
+  .option.selected .option-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: white; }
+
+  /* Scale */
+  .scale-wrap { display: flex; flex-direction: column; gap: .5rem; }
+  .scale-labels { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); margin-bottom: .25rem; }
+  .scale-options { display: flex; gap: .4rem; }
+  .scale-btn { flex: 1; aspect-ratio: 1; border: 1.5px solid rgba(51,51,51,.15); border-radius: 3px; background: white; cursor: pointer; font-size: .85rem; font-weight: 500; transition: all .2s; font-family: 'DM Sans', sans-serif; }
+  .scale-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .scale-btn.selected { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* Text input */
+  .text-input { width: 100%; padding: .85rem 1rem; border: 1.5px solid rgba(51,51,51,.15); border-radius: 3px; font-family: 'DM Sans', sans-serif; font-size: .95rem; background: white; color: var(--ink); outline: none; transition: border .2s; }
+  .text-input:focus { border-color: var(--accent); }
+
+  /* Select */
+  .select-input { width: 100%; padding: .85rem 1rem; border: 1.5px solid rgba(51,51,51,.15); border-radius: 3px; font-family: 'DM Sans', sans-serif; font-size: .95rem; background: white; color: var(--ink); outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a8c7e' fill='none' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }
+  .select-input:focus { border-color: var(--accent); }
+
+  /* Nav */
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+  .btn { padding: .75rem 2rem; border: none; border-radius: 3px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500; transition: all .2s; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--muted); font-size: .85rem; }
+  .btn-ghost:hover { color: var(--ink); }
+  .submit-btn { width: 100%; padding: 1rem; background: var(--accent); color: white; border: none; border-radius: 3px; font-family: 'Playfair Display', serif; font-size: 1.1rem; cursor: pointer; transition: all .2s; margin-top: 1.5rem; letter-spacing: .02em; }
+  .submit-btn:hover { background: var(--accent-dark); }
+
+  /* RESULTS */
+  #results-page { display: none; }
+  .results-header { text-align: center; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(51,51,51,.12); }
+  .results-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: .5rem; }
+  .results-header p { color: var(--muted); font-size: .95rem; }
+  .result-block { margin-bottom: 2.5rem; background: var(--card); border: 1px solid rgba(51,51,51,.08); border-radius: 4px; padding: 1.75rem 2rem; box-shadow: 0 1px 12px rgba(51,51,51,.06); }
+  .result-q { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
+  .result-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.25rem; line-height: 1.4; }
+
+  /* Bar chart */
+  .bar-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .6rem; font-size: .85rem; }
+  .bar-label { width: 160px; flex-shrink: 0; color: var(--ink); }
+  .bar-track { flex: 1; height: 24px; background: rgba(51,51,51,.07); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent-dark); border-radius: 2px; transition: width 1s ease; width: 0%; }
+  .bar-pct { width: 40px; text-align: right; font-weight: 500; color: var(--accent); font-size: .85rem; }
+
+  /* Gauge */
+  .gauge-wrap { text-align: center; padding: 1rem 0; }
+  .gauge-score { font-family: 'Playfair Display', serif; font-size: 4rem; color: var(--accent); line-height: 1; }
+  .gauge-max { font-size: 1.2rem; color: var(--muted); }
+  .gauge-label { color: var(--muted); font-size: .85rem; margin-top: .5rem; }
+
+  /* Your answer highlight */
+  .your-answer { display: inline-flex; align-items: center; gap: .4rem; background: rgba(221,118,2,.08); border: 1px solid rgba(221,118,2,.25); color: var(--accent-dark); padding: .3rem .75rem; border-radius: 2px; font-size: .8rem; margin-bottom: 1rem; }
+
+  /* Takeaway */
+  .takeaway { background: var(--dark); color: var(--paper); padding: 2rem 2.5rem; border-radius: 4px; margin-bottom: 2.5rem; border-left: 4px solid var(--accent); }
+  .takeaway-eyebrow { font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; color: var(--gold); margin-bottom: .75rem; }
+  .takeaway h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; line-height: 1.4; }
+
+  /* EMAIL CAPTURE */
+  .email-capture { background: var(--card-bg); border: 1px solid rgba(221,118,2,.25); border-radius: 4px; padding: 2rem 2.5rem; margin-bottom: 2.5rem; text-align: center; }
+  .email-capture-eyebrow { font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; }
+  .email-capture h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; line-height: 1.4; margin-bottom: .6rem; }
+  .email-capture p { color: var(--muted); font-size: .88rem; margin-bottom: 1.4rem; line-height: 1.55; }
+  .email-row { display: flex; gap: .6rem; max-width: 480px; margin: 0 auto; }
+  .email-row .text-input { flex: 1; }
+  .email-submit-btn { padding: .85rem 1.4rem; background: var(--accent); color: white; border: none; border-radius: 3px; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500; cursor: pointer; transition: background .2s; white-space: nowrap; flex-shrink: 0; }
+  .email-submit-btn:hover { background: var(--accent-dark); }
+  .email-success { display: none; align-items: center; justify-content: center; gap: .6rem; color: var(--accent-dark); font-size: .95rem; font-weight: 500; padding: .75rem; background: rgba(221,118,2,.08); border-radius: 3px; border: 1px solid rgba(221,118,2,.2); }
+  .email-success svg { flex-shrink: 0; }
+
+  /* Share */
+  .share-section { text-align: center; padding: 2rem; border-top: 1px solid rgba(51,51,51,.1); margin-top: 1rem; }
+  .share-section p { color: var(--muted); font-size: .9rem; margin-bottom: 1rem; }
+  .share-btn { display: inline-block; padding: .65rem 1.5rem; background: var(--dark); color: var(--paper); border-radius: 3px; font-size: .85rem; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; margin: .25rem; transition: background .2s; }
+  .share-btn:hover { background: var(--accent); }
+
+  footer { text-align: center; padding: 2rem; font-size: .75rem; color: var(--muted); border-top: 1px solid rgba(51,51,51,.08); background: var(--card-bg); }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 500px) {
+    .question-card { padding: 1.5rem; }
+    .bar-label { width: 110px; font-size: .78rem; }
+    .scale-options { gap: .25rem; }
+    .email-row { flex-direction: column; }
+    .email-submit-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Framfot &middot; Ledarskapsbarometern 2026</p>
+  <h1>Hur ser <em>verkligt</em> ledarskap<br>ut i Sverige?</h1>
+  <p class="sub">7 frågor &middot; tar ~2 minuter &middot; du ser resultaten direkt</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-label" id="progressLabel">Fråga 1 av 7</span>
+</div>
+
+<main>
+
+  <div id="survey-page">
+
+    <!-- Q1: Bransch -->
+    <div class="question-card active" data-q="0">
+      <p class="q-number">Fråga 1 av 7</p>
+      <p class="q-text">Inom vilken bransch är du verksam?</p>
+      <select class="select-input" id="q0-select">
+        <option value="">Välj bransch&hellip;</option>
+        <option value="Teknik &amp; IT">Teknik &amp; IT</option>
+        <option value="Vård &amp; omsorg">Vård &amp; omsorg</option>
+        <option value="Handel &amp; e-handel">Handel &amp; e-handel</option>
+        <option value="Bygg &amp; fastighet">Bygg &amp; fastighet</option>
+        <option value="Tillverkning &amp; industri">Tillverkning &amp; industri</option>
+        <option value="Finans &amp; försäkring">Finans &amp; försäkring</option>
+        <option value="Utbildning">Utbildning</option>
+        <option value="Offentlig sektor">Offentlig sektor</option>
+        <option value="Media, reklam &amp; kommunikation">Media, reklam &amp; kommunikation</option>
+        <option value="Annan">Annan</option>
+      </select>
+      <div class="nav">
+        <span></span>
+        <button class="btn btn-primary" onclick="next()">Nästa &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Q2: Roll -->
+    <div class="question-card" data-q="1">
+      <p class="q-number">Fråga 2 av 7</p>
+      <p class="q-text">Vilken roll har du i din organisation?</p>
+      <div class="options">
+        <div class="option" onclick="selectOption(this,'q1')"><div class="option-dot"></div>Ledare / chef med personalansvar</div>
+        <div class="option" onclick="selectOption(this,'q1')"><div class="option-dot"></div>Senior medarbetare utan personalansvar</div>
+        <div class="option" onclick="selectOption(this,'q1')"><div class="option-dot"></div>Medarbetare / specialist</div>
+        <div class="option" onclick="selectOption(this,'q1')"><div class="option-dot"></div>VD / C-suite</div>
+        <div class="option" onclick="selectOption(this,'q1')"><div class="option-dot"></div>Egenföretagare / konsult</div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" onclick="prev()">&larr; Tillbaka</button>
+        <button class="btn btn-primary" onclick="next()">Nästa &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Q3: Betyg -->
+    <div class="question-card" data-q="2">
+      <p class="q-number">Fråga 3 av 7</p>
+      <p class="q-text">Hur väl fungerar ledarskapet i din organisation idag?</p>
+      <div class="scale-wrap">
+        <div class="scale-labels"><span>Mycket dåligt</span><span>Mycket bra</span></div>
+        <div class="scale-options" id="q2-scale">
+          <button class="scale-btn" onclick="selectScale(this,'q2',1)">1</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',2)">2</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',3)">3</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',4)">4</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',5)">5</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',6)">6</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',7)">7</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',8)">8</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',9)">9</button>
+          <button class="scale-btn" onclick="selectScale(this,'q2',10)">10</button>
+        </div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" onclick="prev()">&larr; Tillbaka</button>
+        <button class="btn btn-primary" onclick="next()">Nästa &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Q4: Problem -->
+    <div class="question-card" data-q="3">
+      <p class="q-number">Fråga 4 av 7</p>
+      <p class="q-text">Vad är det vanligaste ledarskapsproblemet på din arbetsplats?</p>
+      <div class="options">
+        <div class="option" onclick="selectOption(this,'q3')"><div class="option-dot"></div>Otydlig kommunikation och riktning</div>
+        <div class="option" onclick="selectOption(this,'q3')"><div class="option-dot"></div>Brist på förtroende och psykologisk trygghet</div>
+        <div class="option" onclick="selectOption(this,'q3')"><div class="option-dot"></div>Mikrostyrning – för lite självständighet</div>
+        <div class="option" onclick="selectOption(this,'q3')"><div class="option-dot"></div>Chefer saknar tid och närvaro</div>
+        <div class="option" onclick="selectOption(this,'q3')"><div class="option-dot"></div>Inga tydliga problem – ledarskapet fungerar bra</div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" onclick="prev()">&larr; Tillbaka</button>
+        <button class="btn btn-primary" onclick="next()">Nästa &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Q5: Feedback -->
+    <div class="question-card" data-q="4">
+      <p class="q-number">Fråga 5 av 7</p>
+      <p class="q-text">Hur ofta ger din närmaste chef dig konstruktiv feedback?</p>
+      <div class="options">
+        <div class="option" onclick="selectOption(this,'q4')"><div class="option-dot"></div>Varje vecka eller oftare</div>
+        <div class="option" onclick="selectOption(this,'q4')"><div class="option-dot"></div>En gång i månaden</div>
+        <div class="option" onclick="selectOption(this,'q4')"><div class="option-dot"></div>Några gånger per år</div>
+        <div class="option" onclick="selectOption(this,'q4')"><div class="option-dot"></div>Sällan eller aldrig</div>
+        <div class="option" onclick="selectOption(this,'q4')"><div class="option-dot"></div>Jag har ingen direkt chef</div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" onclick="prev()">&larr; Tillbaka</button>
+        <button class="btn btn-primary" onclick="next()">Nästa &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Q6: Framtid -->
+    <div class="question-card" data-q="5">
+      <p class="q-number">Fråga 6 av 7</p>
+      <p class="q-text">Vilken ledarskapsförmåga är viktigast att utveckla hos chefer de närmaste 3 åren?</p>
+      <div class="options">
+        <div class="option" onclick="selectOption(this,'q5')"><div class="option-dot"></div>Förmåga att leda på distans och i hybridmiljöer</div>
+        <div class="option" onclick="selectOption(this,'q5')"><div class="option-dot"></div>Emotionell intelligens och empati</div>
+        <div class="option" onclick="selectOption(this,'q5')"><div class="option-dot"></div>Strategiskt och analytiskt tänkande</div>
+        <div class="option" onclick="selectOption(this,'q5')"><div class="option-dot"></div>Förmåga att hantera förändring och osäkerhet</div>
+        <div class="option" onclick="selectOption(this,'q5')"><div class="option-dot"></div>Inkludering och mångfaldsmedvetenhet</div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-ghost" onclick="prev()">&larr; Tillbaka</button>
+        <button class="btn btn-primary" onclick="next()">Nästa &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Q7: Öppen -->
+    <div class="question-card" data-q="6">
+      <p class="q-number">Fråga 7 av 7</p>
+      <p class="q-text">Beskriv i ett ord den viktigaste egenskapen hos en riktigt bra ledare.</p>
+      <input type="text" class="text-input" id="q6-text" placeholder="T.ex. lyhördhet, mod, tydlighet&hellip;" maxlength="60">
+      <div class="nav">
+        <button class="btn btn-ghost" onclick="prev()">&larr; Tillbaka</button>
+      </div>
+      <button class="submit-btn" onclick="submitSurvey()">Se dina resultat &rarr;</button>
+    </div>
+
+  </div><!-- /survey-page -->
+
+  <!-- RESULTS -->
+  <div id="results-page">
+
+    <div class="results-header">
+      <p class="eyebrow" style="color:var(--gold)">Ledarskapsbarometern 2026</p>
+      <h2>Dina svar &ndash; och vad andra tycker</h2>
+      <p>Baserat på svar från deltagare i undersökningen</p>
+    </div>
+
+    <div class="takeaway" id="takeaway-box">
+      <p class="takeaway-eyebrow">Framfots analys</p>
+      <h3 id="takeaway-text">Laddar&hellip;</h3>
+    </div>
+
+    <div class="result-block">
+      <p class="result-q">Fråga 3</p>
+      <p class="result-title">Hur väl fungerar ledarskapet? &mdash; ditt betyg vs snittet</p>
+      <div id="your-score-label" class="your-answer" style="display:none"></div>
+      <div class="gauge-wrap">
+        <div class="gauge-score" id="avg-score">&mdash;</div>
+        <div class="gauge-max">/10</div>
+        <div class="gauge-label">Genomsnittligt betyg &mdash; <span id="respondent-count"></span></div>
+      <p id="results-note" style="display:none;color:var(--muted);font-size:.82rem;margin-top:.5rem;">Kunde inte hämta live-data just nu. Ditt svar har sparats.</p>
+      </div>
+    </div>
+
+    <div class="result-block">
+      <p class="result-q">Fråga 4</p>
+      <p class="result-title">Vanligaste ledarskapsproblemet</p>
+      <div id="your-problem-label" class="your-answer" style="display:none"></div>
+      <div id="problem-bars"></div>
+    </div>
+
+    <div class="result-block">
+      <p class="result-q">Fråga 5</p>
+      <p class="result-title">Hur ofta ges konstruktiv feedback?</p>
+      <div id="your-feedback-label" class="your-answer" style="display:none"></div>
+      <div id="feedback-bars"></div>
+    </div>
+
+    <div class="result-block">
+      <p class="result-q">Fråga 6</p>
+      <p class="result-title">Viktigaste ledarskapsförmågan att utveckla</p>
+      <div id="your-future-label" class="your-answer" style="display:none"></div>
+      <div id="future-bars"></div>
+    </div>
+
+    <!-- EMAIL CAPTURE -->
+    <div class="email-capture">
+      <p class="email-capture-eyebrow">Den fullständiga rapporten</p>
+      <h3>Var först med att få Ledarskapsbarometern 2026</h3>
+      <p>Lämna din e-postadress så skickar vi den fullständiga rapporten &mdash; med djupanalys per bransch och roll &mdash; direkt till din inkorg när den är klar.</p>
+      <div class="email-row">
+        <input type="email" class="text-input" id="email-input" placeholder="din@epost.se">
+        <button class="email-submit-btn" onclick="submitEmail()">Skicka mig rapporten</button>
+      </div>
+      <div class="email-success" id="email-success">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#dd7602"/><path d="M5 9l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Tack! Vi hör av oss när rapporten är klar.
+      </div>
+    </div>
+
+    <div class="share-section">
+      <p>Dela undersökningen med ditt nätverk &mdash; ju fler som svarar, desto bättre statistik</p>
+      <button class="share-btn" onclick="shareLinkedIn()">Dela på LinkedIn</button>
+      <button class="share-btn" onclick="copyLink()">Kopiera länk</button>
+    </div>
+
+  </div><!-- /results-page -->
+
+</main>
+
+<footer>
+  <img src="data:image/png;base64,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" alt="Framfot – Utbildning för framgång" style="height:52px;width:auto;display:block;margin:0 auto 0.75rem;opacity:0.85;">
+  <a href="https://framfot.se">framfot.se</a> &middot; <a href="/cdn-cgi/l/email-protection#bed7d0d8d1fed8ccdfd3d8d1ca90cddb"><span class="__cf_email__" data-cfemail="71181f171e311703101c171e055f0214">[email&#160;protected]</span></a> &middot; 0220-600 680
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── Supabase config ────────────────────────────────────────
+  var SUPABASE_URL = 'https://fnpwxzitqozuimfzjlwa.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZucHd4eml0cW96dWltZnpqbHdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjA5MDcsImV4cCI6MjA4ODg5NjkwN30.wnIM82KpgmrqcOd3FaJs4QnsHMvEhp8rggsOsHTBWX4';
+
+  // ── State ──────────────────────────────────────────────────
+  var answers = { q0: null, q1: null, q2: null, q3: null, q4: null, q5: null, q6: '' };
+  var current = 0;
+  var total = 7;
+
+  // ── Navigation ─────────────────────────────────────────────
+  function showCard(n) {
+    document.querySelectorAll('.question-card').forEach(function(c) { c.classList.remove('active'); });
+    document.querySelectorAll('.question-card')[n].classList.add('active');
+    var pct = (n / total) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = 'Fråga ' + (n + 1) + ' av ' + total;
+  }
+
+  function next() {
+    if (!validateCurrent()) return;
+    if (current < total - 1) { current++; showCard(current); }
+  }
+
+  function prev() {
+    if (current > 0) { current--; showCard(current); }
+  }
+
+  function validateCurrent() {
+    if (current === 0) return document.getElementById('q0-select').value !== '';
+    if (current === 6) return true;
+    var keys = ['q0','q1','q2','q3','q4','q5','q6'];
+    return answers[keys[current]] !== null;
+  }
+
+  // ── Input handlers ─────────────────────────────────────────
+  function selectOption(el, key) {
+    el.closest('.options').querySelectorAll('.option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    answers[key] = el.textContent.trim();
+  }
+
+  function selectScale(el, key, val) {
+    el.closest('.scale-options').querySelectorAll('.scale-btn').forEach(function(b) { b.classList.remove('selected'); });
+    el.classList.add('selected');
+    answers[key] = val;
+  }
+
+  document.getElementById('q0-select').addEventListener('change', function() {
+    answers.q0 = this.value;
+  });
+
+  document.getElementById('q6-text').addEventListener('input', function() {
+    answers.q6 = this.value;
+  });
+
+  // ── Supabase helpers ───────────────────────────────────────
+  function sbFetch(path, method, body) {
+    return fetch(SUPABASE_URL + path, {
+      method: method || 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': method === 'POST' ? 'return=minimal' : ''
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+  }
+
+  // ── Submit ─────────────────────────────────────────────────
+  function submitSurvey() {
+    answers.q6 = document.getElementById('q6-text').value;
+
+    // Visa resultatsidan direkt med loading-state
+    document.getElementById('survey-page').style.display = 'none';
+    document.getElementById('results-page').style.display = 'block';
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressLabel').textContent = 'Klart!';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showLoadingState();
+
+    // 1. Spara svaret
+    sbFetch('/rest/v1/svar', 'POST', {
+      bransch:  answers.q0 || null,
+      roll:     answers.q1 || null,
+      betyg:    answers.q2 || null,
+      problem:  answers.q3 || null,
+      feedback: answers.q4 || null,
+      framtid:  answers.q5 || null,
+      ord:      answers.q6 || null
+    })
+    .then(function() {
+      // 2. Hämta alla svar och räkna ut aggregat
+      return sbFetch('/rest/v1/svar?select=betyg,problem,feedback,framtid');
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(rows) {
+      var aggregated = aggregate(rows);
+      buildResults(aggregated);
+      setTimeout(animateBars, 300);
+    })
+    .catch(function(err) {
+      console.warn('Supabase-fel:', err);
+      buildResults(null);
+    });
+  }
+
+  function showLoadingState() {
+    document.getElementById('takeaway-text').innerHTML = 'Hämtar resultat&hellip;';
+    document.getElementById('avg-score').textContent = '…';
+    ['problem-bars','feedback-bars','future-bars'].forEach(function(id) {
+      document.getElementById(id).innerHTML = '<p style="color:var(--muted);font-size:.85rem;">Laddar…</p>';
+    });
+  }
+
+  // ── Aggregera rader från Supabase ──────────────────────────
+  function aggregate(rows) {
+    var scores = [], problems = {}, feedback = {}, future = {};
+    rows.forEach(function(r) {
+      if (r.betyg)    scores.push(parseInt(r.betyg));
+      if (r.problem)  problems[r.problem]  = (problems[r.problem]  || 0) + 1;
+      if (r.feedback) feedback[r.feedback] = (feedback[r.feedback] || 0) + 1;
+      if (r.framtid)  future[r.framtid]    = (future[r.framtid]    || 0) + 1;
+    });
+    var avg = scores.length
+      ? (scores.reduce(function(a,b){ return a+b; },0) / scores.length).toFixed(1)
+      : null;
+    return { count: rows.length, avg_score: avg, problems: problems, feedback: feedback, future: future };
+  }
+
+  // ── Bygg resultatsidan ─────────────────────────────────────
+  function buildResults(data) {
+    buildTakeaway(data);
+
+    if (!data || !data.avg_score) {
+      document.getElementById('avg-score').textContent = '–';
+      document.getElementById('respondent-count').textContent = 'Ditt svar är det första!';
+      return;
+    }
+
+    document.getElementById('avg-score').textContent = data.avg_score;
+    document.getElementById('respondent-count').textContent = data.count + ' svar';
+
+    if (answers.q2) {
+      var diff = answers.q2 - parseFloat(data.avg_score);
+      var dir = diff > 0 ? 'högre än' : diff < 0 ? 'lägre än' : 'samma som';
+      var lbl = document.getElementById('your-score-label');
+      lbl.innerHTML = '&#10022; Du gav betyget <strong>' + answers.q2 + '/10</strong> — '
+        + Math.abs(diff).toFixed(1) + ' poäng ' + dir + ' snittet';
+      lbl.style.display = 'inline-flex';
+    }
+
+    buildBars('problem-bars',  data.problems,  answers.q3, 'your-problem-label');
+    buildBars('feedback-bars', data.feedback,  answers.q4, 'your-feedback-label');
+    buildBars('future-bars',   data.future,    answers.q5, 'your-future-label');
+  }
+
+  function buildBars(containerId, data, userAnswer, labelId) {
+    if (!data || Object.keys(data).length === 0) {
+      document.getElementById(containerId).innerHTML =
+        '<p style="color:var(--muted);font-size:.85rem;">Fler svar behövs för statistik.</p>';
+      return;
+    }
+    var tot = Object.values(data).reduce(function(a,b){ return a+b; }, 0);
+    var sorted = Object.entries(data).sort(function(a,b){ return b[1]-a[1]; });
+    var el = document.getElementById(containerId);
+    el.innerHTML = sorted.map(function(entry) {
+      var label   = entry[0];
+      var pct     = Math.round((entry[1] / tot) * 100);
+      var isYours = label === userAnswer;
+      var color   = isYours ? '#dd7602' : '#B55c04';
+      var style   = isYours ? 'font-weight:600;color:#dd7602' : '';
+      return '<div class="bar-row">'
+        + '<span class="bar-label" style="' + style + '">' + label + '</span>'
+        + '<div class="bar-track"><div class="bar-fill" data-pct="' + pct
+        + '" style="background:' + color + '"></div></div>'
+        + '<span class="bar-pct">' + pct + '%</span>'
+        + '</div>';
+    }).join('');
+
+    if (userAnswer) {
+      var lbl = document.getElementById(labelId);
+      lbl.innerHTML = '&#10022; Ditt svar: <strong>' + userAnswer + '</strong>';
+      lbl.style.display = 'inline-flex';
+    }
+  }
+
+  function animateBars() {
+    document.querySelectorAll('.bar-fill').forEach(function(b) {
+      b.style.width = b.dataset.pct + '%';
+    });
+  }
+
+  function buildTakeaway(data) {
+    var text = 'Ledarskap i Sverige är under förändring. Ditt svar har sparats och bidrar till undersökningen.';
+    var bransch = answers.q0 || '';
+    var problem = answers.q3 || '';
+    var score   = answers.q2 || 6;
+    if (data && bransch && problem) {
+      text = 'Inom <strong>' + bransch + '</strong> lyfts "' + problem.toLowerCase()
+        + '" som den största utmaningen. ';
+      if (score <= 5)      text += 'Att ledarskapsbetyget ligger under 5 signalerar ett reellt behov av förändring.';
+      else if (score >= 8) text += 'Det är uppmuntrande att du bedömer ledarskapet högt — det gör dig till ett undantag.';
+      else                 text += 'Mediokra betyg på ledarskap är i dag norm snarare än undantag.';
+    }
+    document.getElementById('takeaway-text').innerHTML = text;
+  }
+
+  // ── Email capture ──────────────────────────────────────────
+  function submitEmail() {
+    var emailEl = document.getElementById('email-input');
+    var email   = emailEl.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      emailEl.style.borderColor = '#cc3300';
+      emailEl.focus();
+      return;
+    }
+    emailEl.style.borderColor = '';
+    document.querySelector('.email-row').style.display = 'none';
+    document.getElementById('email-success').style.display = 'flex';
+
+    sbFetch('/rest/v1/epost', 'POST', { email: email });
+  }
+
+  // ── Share ──────────────────────────────────────────────────
+  function shareLinkedIn() {
+    var url  = encodeURIComponent(window.location.href);
+    var text = encodeURIComponent('Jag svarade på Framfots Ledarskapsbarometer 2026. Se hur ditt ledarskap jämförs med andra branscher');
+    window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + url + '&summary=' + text, '_blank');
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+      alert('Länk kopierad!');
+    });
+  }
+</script><script>
+  // ── Apps Script URL ────────────────────────────────────────
+  // Byt ut denna URL mot din Google Apps Script-URL
+  var APPS_SCRIPT_URL = 'KLISTRA_IN_DIN_APPS_SCRIPT_URL_HÄR';
+
+  // ── State ──────────────────────────────────────────────────
+  var answers = { q0: null, q1: null, q2: null, q3: null, q4: null, q5: null, q6: '' };
+  var current = 0;
+  var total = 7;
+  var liveData = null; // fylls med riktiga svar från Apps Script
+
+  // ── Navigation ─────────────────────────────────────────────
+  function showCard(n) {
+    document.querySelectorAll('.question-card').forEach(function(c) { c.classList.remove('active'); });
+    document.querySelectorAll('.question-card')[n].classList.add('active');
+    var pct = (n / total) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = 'Fråga ' + (n + 1) + ' av ' + total;
+  }
+
+  function next() {
+    if (!validateCurrent()) return;
+    if (current < total - 1) { current++; showCard(current); }
+  }
+
+  function prev() {
+    if (current > 0) { current--; showCard(current); }
+  }
+
+  function validateCurrent() {
+    if (current === 0) return document.getElementById('q0-select').value !== '';
+    if (current === 6) return true;
+    var keys = ['q0','q1','q2','q3','q4','q5','q6'];
+    return answers[keys[current]] !== null;
+  }
+
+  // ── Input handlers ─────────────────────────────────────────
+  function selectOption(el, key) {
+    el.closest('.options').querySelectorAll('.option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    answers[key] = el.textContent.trim();
+  }
+
+  function selectScale(el, key, val) {
+    el.closest('.scale-options').querySelectorAll('.scale-btn').forEach(function(b) { b.classList.remove('selected'); });
+    el.classList.add('selected');
+    answers[key] = val;
+  }
+
+  document.getElementById('q0-select').addEventListener('change', function() {
+    answers.q0 = this.value;
+  });
+
+  document.getElementById('q6-text').addEventListener('input', function() {
+    answers.q6 = this.value;
+  });
+
+  // ── Submit ─────────────────────────────────────────────────
+  function submitSurvey() {
+    answers.q6 = document.getElementById('q6-text').value;
+
+    // Show results page immediately with loading state
+    document.getElementById('survey-page').style.display = 'none';
+    document.getElementById('results-page').style.display = 'block';
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressLabel').textContent = 'Klart!';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showLoadingState();
+
+    // POST this answer, then GET aggregated data
+    var payload = {
+      action: 'submit',
+      timestamp: new Date().toISOString(),
+      bransch:  answers.q0 || '',
+      roll:     answers.q1 || '',
+      betyg:    answers.q2 || '',
+      problem:  answers.q3 || '',
+      feedback: answers.q4 || '',
+      framtid:  answers.q5 || '',
+      ord:      answers.q6 || ''
+    };
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      liveData = data.aggregated;
+      buildResults();
+      setTimeout(animateBars, 300);
+    })
+    .catch(function(err) {
+      console.warn('Kunde inte hämta live-data:', err);
+      // Fallback: bygg resultat utan jämförelsedata
+      liveData = null;
+      buildResults();
+      setTimeout(animateBars, 300);
+    });
+  }
+
+  function showLoadingState() {
+    document.getElementById('takeaway-text').innerHTML = 'Hämtar resultat&hellip;';
+    document.getElementById('avg-score').textContent = '…';
+    ['problem-bars','feedback-bars','future-bars'].forEach(function(id) {
+      document.getElementById(id).innerHTML = '<p style="color:var(--muted);font-size:.85rem;">Laddar…</p>';
+    });
+  }
+
+  // ── Email capture ──────────────────────────────────────────
+  function submitEmail() {
+    var emailEl = document.getElementById('email-input');
+    var email   = emailEl.value.trim();
+    var re      = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) {
+      emailEl.style.borderColor = '#cc3300';
+      emailEl.focus();
+      return;
+    }
+    emailEl.style.borderColor = '';
+    document.querySelector('.email-row').style.display = 'none';
+    document.getElementById('email-success').style.display = 'flex';
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'email', email_signup: email, timestamp: new Date().toISOString() })
+    }).catch(function(e) { console.warn('Email-fel:', e); });
+  }
+
+  // ── Results ────────────────────────────────────────────────
+  function buildResults() {
+    if (!liveData) {
+      buildTakeaway(null);
+      document.getElementById('avg-score').textContent = '–';
+      document.getElementById('results-note').style.display = 'block';
+      return;
+    }
+
+    buildTakeaway(liveData);
+
+    // Score
+    var avg = parseFloat(liveData.avg_score).toFixed(1);
+    document.getElementById('avg-score').textContent = avg;
+    document.getElementById('respondent-count').textContent = liveData.count + ' svar';
+
+    if (answers.q2) {
+      var diff = answers.q2 - parseFloat(avg);
+      var dir = diff > 0 ? 'högre än' : diff < 0 ? 'lägre än' : 'samma som';
+      var lbl = document.getElementById('your-score-label');
+      lbl.innerHTML = '&#10022; Du gav betyget <strong>' + answers.q2 + '/10</strong> — ' + Math.abs(diff).toFixed(1) + ' poäng ' + dir + ' snittet';
+      lbl.style.display = 'inline-flex';
+    }
+
+    buildBars('problem-bars',  liveData.problems,  answers.q3, 'your-problem-label');
+    buildBars('feedback-bars', liveData.feedback,  answers.q4, 'your-feedback-label');
+    buildBars('future-bars',   liveData.future,    answers.q5, 'your-future-label');
+  }
+
+  function buildBars(containerId, data, userAnswer, labelId) {
+    if (!data) return;
+    var tot    = Object.values(data).reduce(function(a,b){ return a+b; }, 0);
+    if (tot === 0) return;
+    var sorted = Object.entries(data).sort(function(a,b){ return b[1]-a[1]; });
+    var el     = document.getElementById(containerId);
+    el.innerHTML = sorted.map(function(entry) {
+      var label    = entry[0];
+      var count    = entry[1];
+      var pct      = Math.round((count / tot) * 100);
+      var isYours  = label === userAnswer;
+      var barColor = isYours ? '#dd7602' : '#B55c04';
+      var lblStyle = isYours ? 'font-weight:600;color:#dd7602' : '';
+      return '<div class="bar-row">'
+        + '<span class="bar-label" style="' + lblStyle + '">' + label + '</span>'
+        + '<div class="bar-track"><div class="bar-fill" data-pct="' + pct + '" style="background:' + barColor + '"></div></div>'
+        + '<span class="bar-pct">' + pct + '%</span>'
+        + '</div>';
+    }).join('');
+
+    if (userAnswer) {
+      var lbl = document.getElementById(labelId);
+      lbl.innerHTML = '&#10022; Ditt svar: <strong>' + userAnswer + '</strong>';
+      lbl.style.display = 'inline-flex';
+    }
+  }
+
+  function animateBars() {
+    document.querySelectorAll('.bar-fill').forEach(function(b) {
+      b.style.width = b.dataset.pct + '%';
+    });
+  }
+
+  function buildTakeaway(data) {
+    var text    = 'Ledarskap i Sverige är under förändring. Dina svar har sparats och bidrar till undersökningen.';
+    var bransch = answers.q0 || '';
+    var problem = answers.q3 || '';
+    var score   = answers.q2 || 6;
+
+    if (data && bransch && problem) {
+      text = 'Inom <strong>' + bransch + '</strong> lyfts "' + problem.toLowerCase() + '" som den största utmaningen. ';
+      if (score <= 5)      text += 'Att ledarskapsbetyget ligger under 5 signalerar ett reellt behov av förändring.';
+      else if (score >= 8) text += 'Det är ändå uppmuntrande att du bedömer ledarskapet högt — det gör dig till ett undantag.';
+      else                 text += 'Mediokra betyg på ledarskap är i dag norm snarare än undantag.';
+    }
+    document.getElementById('takeaway-text').innerHTML = text;
+  }
+
+  // ── Share ──────────────────────────────────────────────────
+  function shareLinkedIn() {
+    var url  = encodeURIComponent(window.location.href);
+    var text = encodeURIComponent('Jag svarade på Framfots Ledarskapsbarometer 2026. Se hur ditt ledarskap jämförs med andra branscher');
+    window.open('https://www.linkedin.com/sharin
